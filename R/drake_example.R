@@ -3,6 +3,7 @@
 # Loading libraries --------------
 
 library(drake)
+library(data.table)
 library(dplyr)
 library(ggplot2)
 library(tidyr)
@@ -17,42 +18,25 @@ library(lubridate)
 
 # Check (not get!) the files -----------------
 
-file.exists("data/madrid_2001.csv")
+file.exists("data/madrid_daily_pollution.csv")
+file.exists("data/stations.csv")
 
 # Drake plan ---------------------
 
 plan <- drake_plan(
-  raw_data = map(list.files("data/", pattern = "madrid_", full.names = T),
-                 ~.x %>%
-                   data.table::fread()) %>%
-    bind_rows(),
-  data = raw_data %>%
-    mutate(
-      station = as.factor(station),
-      date = as.POSIXct(date),
-      month = month(date)) %>%
-    arrange(date) %>%
-    thicken(interval = "day",
-            colname = "date_thick") %>%
-    group_by(station, date_thick) %>%
-    select(-date) %>%
-    summarise_if(is_numeric, mean, na.rm = T) %>%
+  raw_data = fread(file_in("data/madrid_daily_pollution.csv")),
+  stations = fread(file_in("data/stations.csv")),
+  nested = raw_data %>%
     group_by(station) %>%
     nest(),
-  test_plot = data %>%
-    pluck("data", 1) %>%
+  test_plot = nested %>%
+    pluck("data", 2) %>%
     ggplot(aes(date_thick, NO_2)) +
     geom_line()
-
-
-
 
 )
 
 
-# Run the plan ------------------
-
-make(plan, jobs = 4, parallelism = "future")
 
 # Config ---------------
 
@@ -60,4 +44,11 @@ config <- drake_config(plan)
 
 vis_drake_graph(config)
 
-readd(test_plot)
+
+
+# Run the plan ------------------
+
+make(plan, jobs = 2, parallelism = "future")
+progress()
+
+vis_drake_graph(config)
