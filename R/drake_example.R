@@ -18,31 +18,15 @@ library(lubridate)
 
 # Check (not get!) the files -----------------
 
-file.exists("data/madrid_2001.csv")
+file.exists("data/madrid_daily_pollution.csv")
+file.exists("data/stations.csv")
 
 # Drake plan ---------------------
 
 plan <- drake_plan(
-  raw_data = map(list.files("data/", pattern = "madrid_", full.names = T),
-                 ~.x %>%
-                   fread()) %>%
-    bind_rows(),
+  raw_data = fread(file_in("data/madrid_daily_pollution.csv")),
   stations = fread(file_in("data/stations.csv")),
-  data_mutated = raw_data %>%
-    mutate(
-      station = as.character(station),
-      date = ymd_hms(date)),
-  data_thick = data_mutated %>%
-    arrange(date) %>%
-    thicken(interval = "day",
-            colname = "date_thick"),
-  data_summary = data_thick %>%
-    group_by(station, date_thick) %>%
-    select(-date) %>%
-    summarise_if(is_numeric, mean, na.rm = T) %>%
-    arrange(date_thick),
-  write = fwrite(data_summary, file = file_out("data/monthly.csv")),
-  nested = data_summary %>%
+  nested = raw_data %>%
     group_by(station) %>%
     nest(),
   test_plot = nested %>%
