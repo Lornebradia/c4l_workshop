@@ -1,11 +1,12 @@
 # An example using drake
-#
+
 # Loading libraries --------------
 
 library(drake)
 library(bsts)
 library(data.table)
 library(dplyr)
+library(magrittr)
 library(ggplot2)
 library(tidyr)
 library(purrr)
@@ -86,6 +87,7 @@ plan <- drake_plan(
         labs(title = glue("Concentrations of {.y} per station")))
 
     )
+
 )
 
 
