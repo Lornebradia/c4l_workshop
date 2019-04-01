@@ -15,6 +15,10 @@ library(padr)
 library(lubridate)
 library(ggridges)
 library(glue)
+library(here)
+library(shiny)
+library(leaflet)
+
 
 # Custom functions --------------
 
@@ -38,8 +42,8 @@ bsts_modelling <- function(data, niter = 1000, burn = .1){
 
 # Check (not get!) the files -----------------
 
-file.exists("data/madrid_daily_pollution.csv")
-file.exists("data/stations.csv")
+file.exists(here("data", "madrid_daily_pollution.csv"))
+file.exists(here("data", "stations.csv"))
 
 # Drake plan ---------------------
 
@@ -78,17 +82,27 @@ plan <- drake_plan(
       agent,
       ~.x %>%
         filter(!is.na(conc)) %>%
-        mutate(month = month(date, label = TRUE)) %>%
+        # mutate(month = month(date, label = TRUE)) %>%
         ggplot(aes(conc, as.factor(name), fill = as.factor(name)))+
-        geom_density_ridges(scale = 10, size = .25, show.legend = F, alpha = .8) +
+        geom_density_ridges(scale = 10, size = .25, show.legend = FALSE, alpha = .8) +
         scale_fill_viridis_d()+
         theme_ridges(font_family = "Helvetica", font_size = 12)+
-        facet_wrap(~month, ncol = 4)+
+        # facet_wrap(~month, ncol = 4)+
         labs(title = glue("Concentrations of {.y} per station")))
-
-    )
-
+    ),
+  centroids = nested_station %>% select(lon, lat) %>% colMeans(),
+  station_map = nested_station %>%
+    leaflet() %>%
+    setView(lng = centroids[1], lat = centroids[2], zoom = 13) %>%
+    addTiles() %>%
+    addMarkers(lng = ~nested_station$lon,
+               lat = ~nested_station$lat,
+               popup = ~nested_station$name)
+  # report = rmarkdown::run(
+  #   knitr_in("R/report.Rmd")
+  # )
 )
+
 
 
 # Config ---------------
@@ -101,7 +115,7 @@ vis_drake_graph(config)
 
 # Run the plan ------------------
 
-make(plan, jobs = 4, parallelism = "future")
+make(plan, jobs = 4, parallelism = "future", lock_envir = FALSE)
 
-readd(plot_agent_ridge) %>% filter(agent == "SO_2") %>% pluck("plot",1)
+
 

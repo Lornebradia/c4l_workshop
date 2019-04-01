@@ -1,0 +1,48 @@
+---
+title: "Untitled"
+params: 
+  agent: 
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(drake)
+library(dplyr)
+library(purrr)
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+rmarkdown::render_delayed({
+  renderPlot(
+    readd(plot_agent_ridge) %>% 
+      filter(agent == input$agent) %>% 
+      pluck("plot",1))
+})
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+selectInput(inputId = "agent", label = "Agent",
+            choices = readd(nested_agent) %>% pluck("agent") )
+```
+
+### Chart C
+
+```{r}
+
+```
+
