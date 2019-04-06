@@ -42,13 +42,13 @@ bsts_modelling <- function(data, niter = 1000, burn = .1){
 
 # Check (not get!) the files -----------------
 
-file.exists(here("data", "madrid_daily_pollution.csv"))
-file.exists(here("data", "stations.csv"))
+fs::file_exists(here("data", "madrid_daily_pollution.csv"))
+fs::file_exists(here("data", "stations.csv"))
 
 # Drake plan ---------------------
 
 plan <- drake_plan(
-  raw_data = fread(file_in("data/madrid_daily_pollution.csv")),
+  raw_data = fread(file_in(("data/madrid_daily_pollution.csv"))),
   stations = fread(file_in("data/stations.csv")),
   cleaned_data = raw_data %>%
     mutate(date = ymd(date)) %>%
@@ -70,6 +70,7 @@ plan <- drake_plan(
       data,
       name,
       ~.x %>%
+        filter(!is.na(conc)) %>%
         ggplot(aes(date, conc, color = agent)) +
         geom_line() +
         theme_minimal()+
@@ -90,17 +91,19 @@ plan <- drake_plan(
         # facet_wrap(~month, ncol = 4)+
         labs(title = glue("Concentrations of {.y} per station")))
     ),
-  centroids = nested_station %>% select(lon, lat) %>% colMeans(),
-  station_map = nested_station %>%
-    leaflet() %>%
-    setView(lng = centroids[1], lat = centroids[2], zoom = 13) %>%
-    addTiles() %>%
-    addMarkers(lng = ~nested_station$lon,
-               lat = ~nested_station$lat,
-               popup = ~nested_station$name)
+  centroids = nested_station %>% select(lon, lat) %>% colMeans()
+  # station_map = nested_station %>%
+  #   leaflet() %>%
+  #   setView(lng = centroids[1], lat = centroids[2], zoom = 13) %>%
+  #   addTiles() %>%
+  #   addMarkers(lng = ~nested_station$lon,
+  #              lat = ~nested_station$lat,
+  #              popup = ~nested_station$name)
   # report = rmarkdown::run(
   #   knitr_in("R/report.Rmd")
-  # )
+  # ),
+
+
 )
 
 
@@ -115,7 +118,7 @@ vis_drake_graph(config)
 
 # Run the plan ------------------
 
-make(plan, jobs = 4, parallelism = "future", lock_envir = FALSE)
+make(plan, jobs = 4, parallelism = "future", lock_envir = FALSE, verbose = TRUE)
 
 
 
