@@ -16,7 +16,7 @@ library(readr)
 
 
 
-ex1 <- drake_plan(
+ex1_plan <- drake_plan(
   measurements = read_csv(file_in("data/madrid_daily_pollution.csv"),
                           col_types = cols(CH4 = col_double(),
                                            NO = col_double(), PM25 = col_double(),
@@ -27,22 +27,23 @@ ex1 <- drake_plan(
   stations = read_csv(file_in("data/stations.csv"),
                       col_types = cols(id = col_character())),
   joined_data = inner_join(measurements, stations, by = c("station" = "id")) %>%
-    tbl_df())
+    select(station, name, lon, lat, elevation, address, date, everything())
+  )
 
 # Visualise your plan ------------
 
-ex1
+ex1_plan
 
-ex1_conf <- drake_config(ex1)
+ex1_conf <- drake_config(ex1_plan)
 vis_drake_graph(ex1_conf)
 
 # Run your plan ------------------
 
-make(ex1)
+make(ex1_plan)
 
 # See results ----
 
-readd(join_data)
+readd(joined_data)
 # loadd(raw_data)
 
 # Graph after running
