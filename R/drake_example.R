@@ -3,16 +3,11 @@
 # Loading libraries --------------
 
 library(drake)
-library(bsts)
 library(data.table)
 library(dplyr)
-library(magrittr)
 library(ggplot2)
 library(tidyr)
 library(purrr)
-library(tsibble)
-library(padr)
-library(lubridate)
 library(ggridges)
 library(glue)
 library(here)

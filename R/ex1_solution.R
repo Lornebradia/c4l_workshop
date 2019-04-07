@@ -8,13 +8,7 @@ library(drake)
 library(readr)
 library(tidyverse)
 
-
 # Create plan ------------
-
-library(readr)
-
-
-
 
 ex1_plan <- drake_plan(
   measurements = read_csv(file_in("data/madrid_daily_pollution.csv"),
