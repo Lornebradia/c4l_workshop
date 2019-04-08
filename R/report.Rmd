@@ -1,23 +1,32 @@
 ---
-title: "Untitled"
-params: 
-  agent: 
-output: 
+title: "Forecasting report"
+resource_files:
+- final.RDS
+- aggregated_renested.RDS
+- seasonal_plots.RDS
+runtime: shiny
+output:
   flexdashboard::flex_dashboard:
     orientation: columns
-    vertical_layout: fill
-runtime: shiny
+    storyboard: yes
+    vertical_layout: scroll
 ---
 
 ```{r setup, include=FALSE}
+library(shiny)
 library(flexdashboard)
-library(drake)
-library(dplyr)
-library(purrr)
+library(tidyverse)
 
-loadd(plotting)
+theme_set(theme_minimal())
+
+final <- readRDS("final.RDS")
+seasonal_plots <- readRDS("seasonal_plots.RDS")
+aggregated_renested <- readRDS("aggregated_renested.RDS")
 
 ```
+
+Forecasting
+=======================================================================
 
 Column{.sidebar data-width=250}
 ----------------------------------------------------------------------
@@ -27,58 +36,81 @@ Hello I am a sidebar
 ```{r}
 selectInput(inputId = "mod_selector", 
             label = "Choose a model", 
-            choices = unique(plotting$m_function), 
+            choices = final %>% distinct(m_function) %>% as_vector() %>% unname(), 
             selected = "arima")
 
 selectInput(input = "agent_selector", 
             label = "Select a pollutant", 
-            choices = unique(plotting$agent))
+            choices = final %>% distinct(agent) %>% as_vector() %>% unname)
 
 ```
 
 
-
-Column {.tabset data-width=450}
+Column {data-width=450}
 -----------------------------------------------------------------------
 
-### A plot of some sort
-
-Here goes a plot of some sort
+### __Forecast Plot__
 
 ```{r}
-rmarkdown::render_delayed({
-  renderPlot(
-    plotting %>% 
-      filter(
-        agent == input$agent_selector, 
-        m_function == input$mod_selector
-      ) %>%
-      pluck("fplot",1))
-})
+renderPlot({
+  final %>% 
+    filter(
+      agent == input$agent_selector, 
+      m_function == input$mod_selector
+    ) %>%
+    pluck("fplot",1)
+}
+)
+
 ```
 
-### Something else 
+### __Model summary__
 
-Here goes something else
+```{r}
+renderTable({
+  final %>% 
+    filter(
+      agent == input$agent_selector, 
+      m_function == input$mod_selector
+    ) %>%
+    pluck("model",1) %>% 
+    pluck("model") %>% 
+    sweep::sw_glance() 
+})
+
+
+```
 
 
 
 Column {data-width=350}
 -----------------------------------------------------------------------
 
-### More things
+
+### __Seasonal plot__
 
 ```{r}
-
+renderPlot({
+  seasonal_plots %>% 
+    filter(
+      agent == input$agent_selector
+    ) %>%
+    pluck("seasonal",1)
+}
+)
 
 ```
 
-### A thing under the previous thing
+### __Ridge Plot__
 
 ```{r}
-
+aggregated_renested %>% 
+  unnest() %>% 
+  ggplot(aes(concentration, agent, fill = agent))+
+  ggridges::geom_density_ridges(scale = 10, 
+                                size = .25,
+                                show.legend = FALSE, 
+                                alpha = .8)+
+  theme_minimal()
 ```
 
-### Yet another thing to test things
-
-Yaaaay thiiiings
