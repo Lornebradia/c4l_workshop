@@ -25,7 +25,11 @@ Every participant should have a GitHub account ready for the workshop.
 Setting one up is easy and straightforward. Just go to
 [github.com](github.com) and follow the steps.
 
-## Shinyapps.io
+## ~~Shinyapps.io~~
 
-We will deploy our shiny application on [shinyapps.io](shinyapps.io),
-for which a free account is required.
+~~We will deploy our shiny application on [shinyapps.io](shinyapps.io),
+for which a free account is required.~~
+
+## RSConnect
+
+We will deploy our report on Roche RStudio RSConnect.

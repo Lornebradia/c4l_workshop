@@ -14,35 +14,71 @@ library(flexdashboard)
 library(drake)
 library(dplyr)
 library(purrr)
+
+loadd(plotting)
+
 ```
 
-Column {data-width=650}
+Column{.sidebar data-width=250}
+----------------------------------------------------------------------
+
+Hello I am a sidebar
+
+```{r}
+selectInput(inputId = "mod_selector", 
+            label = "Choose a model", 
+            choices = unique(plotting$m_function), 
+            selected = "arima")
+
+selectInput(input = "agent_selector", 
+            label = "Select a pollutant", 
+            choices = unique(plotting$agent))
+
+```
+
+
+
+Column {.tabset data-width=450}
 -----------------------------------------------------------------------
 
-### Chart A
+### A plot of some sort
+
+Here goes a plot of some sort
 
 ```{r}
 rmarkdown::render_delayed({
   renderPlot(
-    readd(plot_agent_ridge) %>% 
-      filter(agent == input$agent) %>% 
-      pluck("plot",1))
+    plotting %>% 
+      filter(
+        agent == input$agent_selector, 
+        m_function == input$mod_selector
+      ) %>%
+      pluck("fplot",1))
 })
 ```
+
+### Something else 
+
+Here goes something else
+
+
 
 Column {data-width=350}
 -----------------------------------------------------------------------
 
-### Chart B
-
-```{r}
-selectInput(inputId = "agent", label = "Agent",
-            choices = readd(nested_agent) %>% pluck("agent") )
-```
-
-### Chart C
+### More things
 
 ```{r}
 
+
 ```
 
+### A thing under the previous thing
+
+```{r}
+
+```
+
+### Yet another thing to test things
+
+Yaaaay thiiiings

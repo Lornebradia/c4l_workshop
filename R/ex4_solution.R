@@ -28,6 +28,8 @@ ex4_plan <- drake_plan(
       history,
       agent,
       ~.x %>% ggseasonplot(year.labels = F) +
+        stat_smooth(aes(group = NULL, color = NULL),
+                    se = FALSE, method = "loess") +
         scale_x_continuous(breaks = seq(0, 1, length.out = 12),
                            labels = month.abb) +
         labs(title = glue::glue("Seasonal plot for {.y}")))),
@@ -42,20 +44,30 @@ ex4_plan <- drake_plan(
                    naive = modelling_.naive.),
               .id = "m_function")),
   plotting = combined %>%
-    mutate(fplot = pmap(
-      list(model,
-           agent,
-           m_function),
-      function(x, y, z){
+    mutate(
+      accuracy = map(model,
+                     ~.x %>%
+                       accuracy() %>%
+                       as_tibble(rownames = "set")),
+      fplot = pmap(
+        list(model,
+             agent,
+             m_function
+             ),
+        function(x, y, z){
 
-        x %>% autoplot() +
-          labs(x = "Year",
-               y = "Concentration",
-               subtitle = glue::glue("Polluting agent: {y}"),
-               caption = glue::glue("Modelling function: {z}"))
-      }
+          x %>% autoplot() +
+            labs(x = "Year",
+                 y = "Concentration",
+                 subtitle = glue::glue("Polluting agent: {y}"),
+                 caption = glue::glue("Modelling function: {z}")) +
+            annotate("label", hjust = 0,
+                     x = 1,
+                     y = 0,
+                     label = glue::glue("MAPE 1000 %"))
+        }
 
-    )
+      )
     )
 
 )
@@ -74,6 +86,6 @@ vis_drake_graph(ex4_conf)
 make(ex4_plan)
 
 vis_drake_graph(ex4_conf, collapse = TRUE)
-readd(plotting) %>% pluck("fplots",1)
+readd(plotting) %>% pluck("fplot",5)
 
 
