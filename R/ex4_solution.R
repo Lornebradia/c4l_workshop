@@ -43,29 +43,23 @@ ex4_plan <- drake_plan(
                    arima = modelling_.arima.,
                    naive = modelling_.naive.),
               .id = "m_function")),
-  plotting = combined %>%
+  final = combined %>%
     mutate(
       accuracy = map(model,
                      ~.x %>%
                        accuracy() %>%
-                       as_tibble(rownames = "set")),
-      fplot = pmap(
-        list(model,
-             agent,
-             m_function
-             ),
-        function(x, y, z){
+                       as_tibble(rownames = "set") %>%
+                       pluck("MAPE") %>%
+                       round(2)),
+      fplot = map2(
+        model,
+        agent,
+        ~.x %>% autoplot() +
+          labs(x = "Year",
+               y = "Concentration",
+               subtitle = glue::glue("Polluting agent: {.y}"))+
+          theme(plot.title = element_text(size = 12, face = "bold"))
 
-          x %>% autoplot() +
-            labs(x = "Year",
-                 y = "Concentration",
-                 subtitle = glue::glue("Polluting agent: {y}"),
-                 caption = glue::glue("Modelling function: {z}")) +
-            annotate("label", hjust = 0,
-                     x = 1,
-                     y = 0,
-                     label = glue::glue("MAPE 1000 %"))
-        }
 
       )
     )
@@ -86,6 +80,6 @@ vis_drake_graph(ex4_conf)
 make(ex4_plan)
 
 vis_drake_graph(ex4_conf, collapse = TRUE)
-readd(plotting) %>% pluck("fplot",5)
+readd(final) %>% pluck("fplot",5)
 
 
