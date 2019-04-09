@@ -68,7 +68,7 @@ ex4_plan <- drake_plan(
 
 # Add to the previous plan
 
-ex4_plan <- bind_rows(ex3_plan, ex4_plan)
+ex4_plan <- bind_plans(ex3_plan, ex4_plan)
 
 # Config --------------------
 

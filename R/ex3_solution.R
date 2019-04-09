@@ -17,7 +17,7 @@ ex3_plan <- drake_plan(
     # Cleanup
     select(-all_missing),
   filtered = pivoted %>%
-    filter(agent %in% c("PM10", "PM25", "NO_2","CO")),
+    filter(agent %in% c("BEN", "PM10", "PM25", "NO_2","CO", "NO", "O_3", "NOx")),
   nested = filtered %>%
     group_by_at(1:7) %>%
     nest(.key = "history")
@@ -28,8 +28,8 @@ ex3_plan <- drake_plan(
 
 # We add this plan to our previous plan
 
-ex3_plan <- bind_rows(ex1_plan,
-                      ex3_plan)
+ex3_plan <- bind_plans(ex1_plan,
+                       ex3_plan)
 
 # Config ------------------------------
 

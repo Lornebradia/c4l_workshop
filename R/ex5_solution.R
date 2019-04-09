@@ -14,7 +14,7 @@ ex5_plan <- drake_plan(
     knitr_in("R/report.Rmd"))
 )
 
-ex5_plan <- bind_rows(
+ex5_plan <- bind_plans(
   ex4_plan,
   ex5_plan
 )
