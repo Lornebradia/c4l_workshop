@@ -94,6 +94,8 @@ documentation published on [Shinyapps.io](https://www.shinyapps.io/)
 
 # R knowledge
 
+## Pipes
+
 In this workshop we will make heavy use of the tools of the
 [`tidyverse`](https://www.tidyverse.org/), a suite of packages for
 expanding R’s capabilities beyond the base language. In particular, we
@@ -117,3 +119,47 @@ If you are not familiar with the `%>%` operator, consider having a read:
 
 [Introduction to
 `magrittr`](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html)
+
+## Functional programming tools
+
+We will also make use of functional programming tools that are enhanced
+by the [`purrr`](https://purrr.tidyverse.org/) package. Essentially,
+this is an improved version of the `*apply` family of functions
+(`apply`, `sapply`, `lapply`, and so on) for passing functions as
+arguments to lists (including dataframes).
+
+A canonical example of this functionality is as follows:
+
+``` r
+mtcars %>%
+  split(.$cyl) %>% # from base R
+  map(~ lm(mpg ~ wt, data = .)) %>%
+  map(summary) %>%
+  map_dbl("r.squared")
+#>         4         6         8 
+#> 0.5086326 0.4645102 0.4229655
+```
+
+In particular, we will be using these functions in conjunction with
+`dplyr::mutate()` statements to apply modelling functions to nested
+list-columns in dataframes:
+
+``` r
+by_country <- by_country %>% 
+  mutate(model = map(data, country_model))
+by_country
+#> # A tibble: 142 x 4
+#>   country     continent data              model   
+#>   <fct>       <fct>     <list>            <list>  
+#> 1 Afghanistan Asia      <tibble [12 × 4]> <S3: lm>
+#> 2 Albania     Europe    <tibble [12 × 4]> <S3: lm>
+#> 3 Algeria     Africa    <tibble [12 × 4]> <S3: lm>
+#> 4 Angola      Africa    <tibble [12 × 4]> <S3: lm>
+#> 5 Argentina   Americas  <tibble [12 × 4]> <S3: lm>
+#> 6 Australia   Oceania   <tibble [12 × 4]> <S3: lm>
+#> # … with 136 more rows
+```
+
+For more information on this, check out the [R for Data Science
+book](https://r4ds.had.co.nz/), in particular the chapter on [Many
+Models](https://r4ds.had.co.nz/many-models.html#creating-list-columns).
