@@ -22,9 +22,10 @@ In this workshop we will use R and RStudio, therefore they need to be
 installed in your local machines. You can get R
 [here](https://cran.r-project.org/) and RStudio
 [here](https://www.rstudio.com/products/rstudio/download/#download).
-(Note that you need ***BOTH***).
+(Note that you need
+***BOTH***).
 
-![](img/Rstudio.jpg)
+[![](img/Rstudio.jpg)](https://www.rstudio.com/products/rstudio/download/#download)
 
 ## GitHub account
 
@@ -32,7 +33,7 @@ Every participant should have a GitHub account ready for the workshop.
 Setting one up is easy and straightforward. Just go to
 [github.com](github.com) and follow the steps.
 
-![](img/github.jpg)
+[![](img/github.jpg)](https://github.com/)
 
 ## RSConnect
 
@@ -42,7 +43,7 @@ and in general anything developed in R. We at Roche have it installed,
 so please make sure you have access to it by putting a request on
 [webforms.roche.com](webforms.roche.com):
 
-![](img/webforms.jpg)
+[![](img/webforms.jpg)](https://webforms.roche.com/)
 
 Then fill a request with the following parameters:
 
@@ -90,7 +91,7 @@ Click on “Connect Account” and you can check that you have now
 As an alternative, or in case it is delayed, you can get your
 documentation published on [Shinyapps.io](https://www.shinyapps.io/)
 
-![](img/shinyappsio.jpg)
+[![](img/shinyappsio.jpg)](https://www.shinyapps.io/)
 
 # R knowledge
 
@@ -116,7 +117,6 @@ yada <- read.csv("some_data.csv") %>%   # Read a file
 ```
 
 If you are not familiar with the `%>%` operator, consider having a read:
-
 [Introduction to
 `magrittr`](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html)
 
