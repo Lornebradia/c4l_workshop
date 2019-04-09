@@ -8,7 +8,6 @@ runtime: shiny
 output:
   flexdashboard::flex_dashboard:
     orientation: columns
-    storyboard: yes
     vertical_layout: scroll
 ---
 
@@ -28,25 +27,34 @@ aggregated_renested <- readRDS("aggregated_renested.RDS")
 Forecasting
 =======================================================================
 
-Column{.sidebar data-width=250}
+Column{.sidebar data-width=200}
 ----------------------------------------------------------------------
 
-Hello I am a sidebar
+This simple dashboard shows the results of our analysis for the Madrid Pollution data. Please choose a polluting agent below and a model algorithm to see the forecast results. 
+
 
 ```{r}
+selectInput(inputId = "agent_selector", 
+            label = strong("Select a pollutant"), 
+            choices = final %>% distinct(agent) %>% as_vector() %>% unname)
+
 selectInput(inputId = "mod_selector", 
-            label = "Choose a model", 
+            label = strong("Choose a model"), 
             choices = final %>% distinct(m_function) %>% as_vector() %>% unname(), 
             selected = "arima")
 
-selectInput(input = "agent_selector", 
-            label = "Select a pollutant", 
-            choices = final %>% distinct(agent) %>% as_vector() %>% unname)
+# Expose the selectors to use them inline
+
+mod <- reactive({input$mod_selector})
+agent <- reactive({input$agent_selector})
 
 ```
 
+Models are trained with the [`forecast`](http://pkg.robjhyndman.com/forecast/) package. In particular, the model was implemented as a _forecast with decomposition_, to which either an _ARIMA_, an _ETL_ or a _naive_ method are added. Check the [references](https://otexts.com/fpp2/forecasting-decomposition.html) for further information. 
 
-Column {data-width=450}
+This dashboard was created using the [`flexdasboard`](https://rmarkdown.rstudio.com/flexdashboard/index.html) package. 
+
+Column {data-width=400}
 -----------------------------------------------------------------------
 
 ### __Forecast Plot__
@@ -82,20 +90,26 @@ renderTable({
 ```
 
 
-
-Column {data-width=350}
+Column {data-width=300}
 -----------------------------------------------------------------------
-
 
 ### __Seasonal plot__
 
 ```{r}
 renderPlot({
-  seasonal_plots %>% 
+  p <- seasonal_plots %>% 
     filter(
       agent == input$agent_selector
     ) %>%
     pluck("seasonal",1)
+  
+  if(input$coords == "Polar"){
+    p <- p + 
+      coord_polar()
+  }
+  
+  p
+  
 }
 )
 
@@ -111,6 +125,30 @@ aggregated_renested %>%
                                 size = .25,
                                 show.legend = FALSE, 
                                 alpha = .8)+
-  theme_minimal()
+  theme_minimal()+ 
+  labs(title = "Ridge densities of main polluting agents", 
+       caption = "Period 2001-2018")
 ```
+
+Column {data-width=100}
+-----------------------------------------------------------------------------
+
+
+### __Seasonal plot__
+
+The seasonal plot shows the seasonal concentrations of `r agent` throrough the years.
+
+```{r}
+
+radioButtons(inputId = "coords", 
+             label = "", 
+             choices = c("Cartesian","Polar"), 
+             inline = FALSE)
+```
+
+
+### __Ridge plot__
+
+The ridge plot shows a density of the concentrations of the main polluting agents.
+
 
