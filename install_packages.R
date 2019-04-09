@@ -7,7 +7,9 @@ paq <- c(
   "flexdashboard",
   "forecast",
   "glue",
+  "rsconnect",
   "shiny",
+  "sweep",
   "tidyverse",
   "tsbox"
 )
