@@ -10,30 +10,104 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
-# code4life workshop
 
-This is the repository for the code4life workshop held in Warsaw. 
+# code4life workshop 
 
-# Requirements
+This is the repository for the code4life workshop "End to End development". 
 
-- A github account
+1. [Requirements](#req1)
+1. [R knowledge](#rknow)
+
+# Requirements {#reqs}
+
+- A github account (public account - create one at https://github.com/)
 - R and RStudio
-- Shinyapps.io account
+- A RSConnect account. 
 
 ## R and RStudio 
 
 In this workshop we will use R and RStudio, therefore they need to be installed in your local machines. 
+You can get R [here](https://cran.r-project.org/) and RStudio [here](https://www.rstudio.com/products/rstudio/download/#download). (Note that you need ___BOTH___). 
 
-You can get R [here](https://cran.r-project.org/) and RStudio [here](https://www.rstudio.com/products/rstudio/download/#download). 
+![](img/Rstudio.jpg)
+
+
+
 
 ## GitHub account
 
 Every participant should have a GitHub account ready for the workshop. Setting one up is easy and straightforward. Just go to [github.com](github.com) and follow the steps. 
 
-## ~~Shinyapps.io~~
+![](img/github.jpg)
 
-~~We will deploy our shiny application on [shinyapps.io](shinyapps.io), for which a free account is required.~~
+
 
 ## RSConnect
 
-We will deploy our report on Roche RStudio RSConnect. 
+We will deploy our report on Roche RStudio RSConnect. This is a paid service offered by RStudio for deploying dashboards, documents, plots and in general anything developed in R. We at Roche have it installed, so please make sure you have access to it by putting a request on [webforms.roche.com](webforms.roche.com): 
+
+![](img/webforms.jpg)
+
+
+Then fill a request with the following parameters: 
+
+![](img/beerequest.jpg)
+
+and you should get your request granted within 24h. 
+
+Once you have been granted access, you'll need to configure your RStudio Desktop to be able to connect to RStudio RSConnect. On the menu Options, click on Global Options
+
+![](img/options.jpg) 
+
+and then Publishing. Your Publishing Accounts should be empty (mine has a couple of shinyapps.io connections). 
+
+![](img/publishing.jpg)
+
+Click "Connect" and a menu will pop up with the options: 
+
+![](img/pubopts.jpg)
+
+Choose rsconnect and introduce the name of the server: `rsconnect.roche.com`: 
+
+![](img/rsconnect.jpg)
+
+This will bring forth another window which will ask for your Roche access (it's Roche owned)
+
+![](img/connectrs.jpg)
+
+If you have entered your connections correctly and your account is validated by BEE, you should get a validation screen: 
+
+![](img/verify.jpg)
+
+Click on "Connect Account" and you can check that you have now `rsconnect.roche.com` as a valid connection: 
+
+![](img/rsconnfinal.jpg)
+
+## Shinyapps.io
+
+As an alternative, or in case it is delayed, you can get your documentation published on [Shinyapps.io](https://www.shinyapps.io/)
+
+![](img/shinyappsio.jpg)
+
+# R knowledge {#rknow}
+
+In this workshop we will make heavy use of the tools of the [`tidyverse`](https://www.tidyverse.org/), a suite of packages for expanding R's capabilities beyond the base language. In particular, we will make use of `dplyr` verbs such as `select()`, `filter()`, and so on. 
+
+Also it will heavily feature the pipe operator from `magrittr`, `%>%`, which enables to chain operations in a pipe: 
+
+```{r, echo = T, eval = F}
+# Classic format: 
+yada <- read.csv("some_data.csv")   # Read a file
+yada <- select(yada, 1:4)           # Select the first four columns
+
+# Pipe
+yada <- read.csv("some_data.csv") %>%   # Read a file 
+  select(1:4)                           # Select the first four columns
+
+
+```
+
+
+If you are not familiar with the `%>%` operator, consider having a read: 
+
+[Introduction to `magrittr`](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html)
