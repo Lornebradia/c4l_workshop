@@ -4,16 +4,13 @@
 
 #' Required libraries -------------------
 
-library(forecast)
+
 theme_set(theme_minimal())
 
 #' Add to the plan --------------------------
 
 ex4_plan <- drake_plan(
-  # Yes, this is not optimal - we should go and fix the plan!
-  unnested = nested %>%
-    unnest(),
-  aggregated_renested = unnested %>%
+  aggregated_renested = filtered %>%
     group_by(agent, date) %>%
     summarise(concentration = mean(concentration, na.rm = TRUE)) %>%
     group_by(agent) %>%
@@ -32,37 +29,7 @@ ex4_plan <- drake_plan(
                     se = FALSE, method = "loess") +
         scale_x_continuous(breaks = seq(0, 1, length.out = 12),
                            labels = month.abb) +
-        labs(title = glue::glue("Seasonal plot for {.y}")))),
-  # We will train three models in one
-  modelling = target(
-    to_ts %>% mutate(model = map(history, ~.x %>% stlf(method = how))),
-    transform = map(how = c("ets", "arima", "naive"))
-    ),
-  combined = target(
-    bind_rows(list(ets = modelling_.ets.,
-                   arima = modelling_.arima.,
-                   naive = modelling_.naive.),
-              .id = "m_function")),
-  final = combined %>%
-    mutate(
-      accuracy = map(model,
-                     ~.x %>%
-                       accuracy() %>%
-                       as_tibble(rownames = "set") %>%
-                       pluck("MAPE") %>%
-                       round(2)),
-      fplot = map2(
-        model,
-        agent,
-        ~.x %>% autoplot() +
-          labs(x = "Year",
-               y = "Concentration",
-               subtitle = glue::glue("Polluting agent: {.y}"))+
-          theme(plot.title = element_text(size = 12, face = "bold"))
-
-
-      )
-    )
+        labs(title = glue::glue("Seasonal plot for {.y}"))))
 
 )
 
