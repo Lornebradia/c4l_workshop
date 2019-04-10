@@ -17,7 +17,9 @@ ex3_plan <- drake_plan(
     # Cleanup
     select(-all_missing),
   filtered = pivoted %>%
-    filter(agent %in% c("BEN", "PM10", "PM25", "NO_2","CO", "NO", "O_3", "NOx")),
+    filter(
+      agent %in% c("BEN", "PM10", "PM25", "NO_2", "CO", "NO", "O_3", "NOx")
+    ),
   nested = filtered %>%
     group_by_at(1:7) %>%
     nest(.key = "history")
@@ -40,4 +42,3 @@ vis_drake_graph(ex3_conf)
 
 make(ex3_plan)
 vis_drake_graph(ex3_conf)
-

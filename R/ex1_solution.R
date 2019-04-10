@@ -11,18 +11,23 @@ library(tidyverse)
 # Create plan ------------
 
 ex1_plan <- drake_plan(
-  measurements = read_csv(file_in("data/madrid_daily_pollution.csv"),
-                          col_types = cols(CH4 = col_double(),
-                                           NO = col_double(), PM25 = col_double(),
-                                           TCH = col_double(), TOL = col_double(),
-                                           date = col_date(format = "%Y-%m-%d"),
-                                           station = col_character())
-                          ),
+  measurements = read_csv(
+    file_in("data/madrid_daily_pollution.csv"),
+    col_types = cols(
+      CH4 = col_double(),
+      NO = col_double(),
+      PM25 = col_double(),
+      TCH = col_double(),
+      TOL = col_double(),
+      date = col_date(format = "%Y-%m-%d"),
+      station = col_character()
+    )
+  ),
   stations = read_csv(file_in("data/stations.csv"),
                       col_types = cols(id = col_character())),
   joined_data = inner_join(measurements, stations, by = c("station" = "id")) %>%
     select(station, name, lon, lat, elevation, address, date, everything())
-  )
+)
 
 # Visualise your plan ------------
 
