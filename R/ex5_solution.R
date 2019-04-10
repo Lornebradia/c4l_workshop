@@ -1,17 +1,39 @@
-#' Exercise 5 - Reporting
-#'
-#'
+#' Exercise 5
 
-library(shiny)
+# Required libraries--------------------------
 
+library(forecast)
+
+#' Add to the plan --------------------
 ex5_plan <- drake_plan(
-  # We need to export the results to be able to later publish - the drake cache is not available for export
-  export_final = final %>% saveRDS(file_out("R/final.RDS")),
-  export_seasonal = seasonal_plots %>% saveRDS(file_out("R/seasonal_plots.RDS")),
-  export_agg_ren = aggregated_renested %>%
-    saveRDS(file = file_out("R/aggregated_renested.RDS")),
-  report = rmarkdown::run(
-    knitr_in("R/report.Rmd"))
+  # We will train three models in one
+  modelling = target(
+    to_ts %>% mutate(model = map(history, ~.x %>% stlf(method = how))),
+    transform = map(how = c("ets", "arima", "naive"))
+  ),
+  combined = target(
+    bind_rows(list(ets = modelling_.ets.,
+                   arima = modelling_.arima.,
+                   naive = modelling_.naive.),
+              .id = "m_function")),
+  final = combined %>%
+    mutate(
+      accuracy = map(model,
+                     ~.x %>%
+                       accuracy() %>%
+                       as_tibble(rownames = "set") %>%
+                       pluck("MAPE") %>%
+                       round(2)),
+      fplot = map2(
+        model,
+        agent,
+        ~.x %>% autoplot() +
+          labs(x = "Year",
+               y = "Concentration",
+               subtitle = glue::glue("Polluting agent: {.y}"))+
+          theme(plot.title = element_text(size = 12, face = "bold"))
+      )
+    )
 )
 
 ex5_plan <- bind_plans(
@@ -19,10 +41,15 @@ ex5_plan <- bind_plans(
   ex5_plan
 )
 
+
+#' Config ---------------------------------
+
 ex5_conf <- drake_config(ex5_plan)
-vis_drake_graph(ex5_conf, collapse = TRUE)
+vis_drake_graph(ex5_conf)
 
+# Run the plan  ---------------------------
 
-make(ex5_plan, lock_envir = FALSE)
+make(ex5_plan)
+
 
 
