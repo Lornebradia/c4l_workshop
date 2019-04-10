@@ -51,9 +51,13 @@ Then fill a request with the following parameters:
 
 and you should get your request granted within 24h.
 
-Once you have been granted access, you’ll need to configure your RStudio
-Desktop to be able to connect to RStudio RSConnect. On the menu Options,
-click on Global Options
+Once you have been granted access (you should get an email) you should
+validate your account on the server. Log in to
+[rsconnect.roche.com](rsconnect.roche.com) and follow the steps.
+
+You’ll also need need to configure your RStudio Desktop to be able to
+connect to RStudio RSConnect. On the menu Options, click on Global
+Options
 
 ![](img/options.jpg)
 

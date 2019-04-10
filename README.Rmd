@@ -39,7 +39,6 @@ Every participant should have a GitHub account ready for the workshop. Setting o
 [![](img/github.jpg)](https://github.com/)
 
 
-
 ## RSConnect
 
 We will deploy our report on Roche RStudio RSConnect. This is a paid service offered by RStudio for deploying dashboards, documents, plots and in general anything developed in R. We at Roche have it installed, so please make sure you have access to it by putting a request on [webforms.roche.com](webforms.roche.com): 
@@ -53,7 +52,9 @@ Then fill a request with the following parameters:
 
 and you should get your request granted within 24h. 
 
-Once you have been granted access, you'll need to configure your RStudio Desktop to be able to connect to RStudio RSConnect. On the menu Options, click on Global Options
+Once you have been granted access (you should get an email) you should validate your account on the server. Log in to [rsconnect.roche.com](rsconnect.roche.com) and follow the steps. 
+
+You'll also need need to configure your RStudio Desktop to be able to connect to RStudio RSConnect. On the menu Options, click on Global Options
 
 ![](img/options.jpg) 
 
