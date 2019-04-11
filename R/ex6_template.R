@@ -11,7 +11,7 @@ library(shiny)
 # Create target to export the data that will be needed (final, seasonal_plots, aggregated data)
 # Run the report as a target with
 
-# report = rmarkdown::run(knitr_in("R/report.Rmd"))
+# report = rmarkdown::run(knitr_in("R/report_template.Rmd"))
 
 # ex6_plan <-
 
